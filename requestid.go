@@ -9,7 +9,8 @@ package ginrequestid
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/satori/go.uuid"
+	"fmt"
+	"math/rand"
 )
 
 func RequestID() gin.HandlerFunc {
@@ -17,10 +18,9 @@ func RequestID() gin.HandlerFunc {
 		// Check for incoming header, use it if exists
 		requestID := c.Request.Header.Get("X-Request-Id")
 
-		// Create request id with UUID4
+		// Create request id with random hex string
 		if requestID == "" {
-			uuid4 := uuid.NewV4()
-			requestID = uuid4.String()
+			requestID = randomStr(8)
 		}
 
 		// Expose it for use in the application
@@ -30,4 +30,10 @@ func RequestID() gin.HandlerFunc {
 		c.Writer.Header().Set("X-Request-Id", requestID)
 		c.Next()
 	}
+}
+
+func randomStr(len int) string {
+	buffer := make([]byte, len)
+	rand.Read(buffer)
+	return fmt.Sprintf("%x", buffer)
 }
